@@ -1,4 +1,3 @@
-const { response } = require("../utils/createResponse");
 const {MoviesServices} = require("../services");
 
 
