@@ -25,22 +25,26 @@ Users.init({
     }
 },{sequelize:db, modelName:"user"});
 
-Users.beforeCreate(user => {
-    return bcrypt.genSalt(10)
-    .then(newSalt => {
+
+Users.prototype.hash = async (password, salt) => {
+    try {
+        return bcrypt.hash(password, salt);
+    } catch (error) {
+        return error;
+    }
+}
+
+Users.beforeCreate(async user => {
+    try {
+        const newSalt = await bcrypt.genSalt(5);
         user.salt = newSalt;
-        return user.hash(user.password, newSalt)
-    })
-    .then(newHash => user.password = newHash)
-    .catch(err => console.error("my HOOK ERROR: ", err));
+        const newHash = await user.hash(user.password, newSalt)
+        user.password = newHash;   
+    } catch (error) {
+        console.error("USER HASH HOOK ERROR", error)
+    }
 });
 
-Users.prototype.hash = function(password, salt){
-    return bcrypt.hash(password, salt)
-    .then(hashedPassword => hashedPassword)
-    .catch(err => console.error("my INSTANCE METHOD ERROR: ", err));
-
-}
 
 
 

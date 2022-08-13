@@ -3,6 +3,7 @@ const Router = express.Router();
 
 const movies = require("./movies");
 const favorites = require("./favorites");
+const user = require("./user");
 
 
 const { Users } = require("../models");
@@ -12,6 +13,7 @@ const { Users } = require("../models");
 
 Router.use("/movies", movies);
 Router.use("/favorites", favorites);
+Router.use("/users", user);
 
 
 Router.get("/me", (req, res) => {
