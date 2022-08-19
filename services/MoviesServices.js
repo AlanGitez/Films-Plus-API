@@ -9,10 +9,9 @@ class MoviesServices {
         try {
             const { data } = await axios.get(`${apiTMDB}/movie/popular`/* ?api_key=${api_key}&page=${!queryObj.page ? 1 : queryObj.page} */, 
             {headers:{
-                Authorization: `Bearer ${process.env.API_TOKEN}`,
+                Authorization: `Bearer ${process.env.API_KEY}`,
                 ContentType: 'application/json;charset=utf-8'
-            }
-            })
+            }})
             if(!data.results.length) return response(true, "Cannot get popular movies")
             const movies = {page: data.page, movies: data.results}
             return response(false, movies)
@@ -34,6 +33,39 @@ class MoviesServices {
         }
 
     } 
+
+
+    static async getByGenre (id, page) {
+        try {
+            const { data } = await axios.get(`${apiTMDB}/discover/movie?with_genres=${id}&page=${page}`, {
+                headers:{
+                    Authorization: `Bearer ${process.env.API_KEY}`,
+                    ContentType: 'application/json;charset=utf-8'
+                }
+            })
+            if(!data) return response(true, `Cannot find movies`)
+            return response(false, data)
+
+        } catch (error) {
+            return response(true, error.message)
+        }
+
+    } 
+
+    static async getGenres() {
+        try {
+            const {data} = await axios.get(`${process.env.API_TMDB}/genre/movie/list`, {
+                headers:{
+                    Authorization: `Bearer ${process.env.API_KEY}`,
+                    ContentType: 'application/json;charset=utf-8'
+                }
+            })
+            if(!data) return response(true, "Cannot access this resource");
+            return response(false, data);
+        } catch (error) {
+           return response(true, error.message);
+        }
+    }
 }
 
 module.exports = MoviesServices;

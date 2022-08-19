@@ -1,5 +1,5 @@
 const UserService = require("../services/UserService");
-const { response } = require("../utils/createResponse");
+const generateToken = require("../utils/generateToken");
 
 
 class UserController{
@@ -11,9 +11,17 @@ class UserController{
     }
 
     static async login(req, res){
-        const {error, data} = UserService.login(req.body);
+        const {error, data} = await UserService.login(req.body);
         if(error) return res.status(400).send(data);
-        res.status(200).send(data);
+        const token = generateToken(data.id);
+        res.setHeader(`Authorization`, token);
+        res.status(200).json(data);
+    }
+
+    static async getMe(req, res){
+        const {error, data} = await UserService.getMe(req.user);
+        if(error) return res.status(400).send(data);
+        res.status(200).json(data);
     }
 }
 

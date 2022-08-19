@@ -1,5 +1,6 @@
-const { Users } = require("../models");
+const bcrypt = require("bcryptjs");
 const { response } = require("../utils/createResponse");
+const { Users } = require("../models");
 
 class UserService {
     static async register(body){
@@ -17,13 +18,38 @@ class UserService {
     }
 
     static async login(body){
-        // FUNCIONANDO
+        const {email, password} = body;
         try {
             const user = await Users.findOne({
-                where: {email:body.email},
+                where: {email:email},
             });
+            if(!user) return response(true, "Invalid credentials");
+            
+            if(user && await bcrypt.compare(password, user.password)){
+                
+                return response(false, {
+                    id: user.id, 
+                    username: user.username, 
+                    email:user.email
+                })
+            }else return response(true, "Invalid credentials");
+            
         } catch (error) {
              return response(true, error.message);
+        }
+     }
+
+     static async getMe(user){
+        try {
+            const {id, username, email} = user;
+            if(!user) return response(true, "Cannot connect whit your profile");
+            return response(false, {
+                id, 
+                username, 
+                email
+            })
+        } catch (error) {
+            return response(true, error.message)
         }
      }
 }
