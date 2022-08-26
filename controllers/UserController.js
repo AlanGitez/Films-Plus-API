@@ -14,7 +14,16 @@ class UserController{
         const {error, data} = await UserService.login(req.body);
         if(error) return res.status(400).send(data);
         const token = generateToken(data.id);
-        res.setHeader(`Authorization`, token);
+        res
+        .status(200)
+        .header(`Authorization`, token)
+        .json({...data, token})
+        
+    }
+
+    static async logout(req, res){
+        const {error, data} = await UserService.logout(req.body, req.user);
+        if(error) return res.status(400).send(data);
         res.status(200).json(data);
     }
 

@@ -32,6 +32,12 @@ class MoviesController{
         res.status(200).json(data);
     }
     
+    static async search(req, res) {
+        const {searchContent} = req.params;
+        const {error, data} = await MoviesServices.search(searchContent);
+        if(error) res.status(400).send(data);
+        res.status(200).json(data);
+    }
 }
 
 module.exports = MoviesController;

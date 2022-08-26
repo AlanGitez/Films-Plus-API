@@ -66,6 +66,25 @@ class MoviesServices {
            return response(true, error.message);
         }
     }
+
+    static async search(searchContent) {
+        try {
+            const movie = searchContent.replace(/ /g, "%");
+            const { data } = await axios.get(`${process.env.API_TMDB}/search/multi?&query=${movie}`, {
+                headers:{
+                    Authorization: `Bearer ${process.env.API_KEY}`,
+                    ContentType: 'application/json;charset=utf-8'
+                }
+            })
+
+            // si el arreglo de resultados es menor a 30, que traiga tambien las relacionadas por genero, actores, etc.
+            // esto para no generar una vista de contenido casi vacia
+            if(!data) return response(true, "Cannot find required data")
+            return response(false, data);
+        } catch (error) {
+           return response(true, error.message) 
+        }
+    }
 }
 
 module.exports = MoviesServices;

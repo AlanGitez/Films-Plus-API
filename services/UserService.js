@@ -39,6 +39,16 @@ class UserService {
         }
      }
 
+     static async logout(body, user){
+        try {
+            const { id } = user;
+            if(!user || body.id !== id) return response(true, "Unauthorized");
+            return response(false, {})
+        } catch (error) {
+            return response(true, error.message)
+        }
+     }
+
      static async getMe(user){
         try {
             const {id, username, email} = user;
